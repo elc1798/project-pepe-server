@@ -20,9 +20,9 @@ def get_img_urls():
     offset = int(request.args.get("offset", "0"))
     limit = int(request.args.get("limit", "10"))
 
-    return ", ".join(
-        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], "*.png"))[offset : offset + limit]
-    )
+    images = list(sorted(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], "*.png"))))
+
+    return ", ".join(images[offset : offset + limit])
 
 @app.route("/upload", methods=["POST"])
 @app.route("/upload/", methods=["POST"])
