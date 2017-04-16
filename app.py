@@ -17,8 +17,11 @@ def allowed_file(fname):
 
 @app.route("/")
 def get_img_urls():
+    offset = int(request.args.get("offset", "0"))
+    limit = int(request.args.get("limit", "10"))
+
     return ", ".join(
-        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], "*.png"))
+        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], "*.png"))[offset : offset + limit]
     )
 
 @app.route("/upload", methods=["POST"])
