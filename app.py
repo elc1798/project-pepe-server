@@ -1,6 +1,8 @@
 from flask import Flask, url_for, send_from_directory, request, redirect
+from flask import make_response
 from werkzeug import secure_filename
 
+import io
 import os
 import glob
 
@@ -34,6 +36,19 @@ def upload():
         f.save(os.path.join(app.config["UPLOAD_FOLDER"], fname))
         return "ok"
     return "bad"
+
+@app.route("/test")
+@app.route("/test/")
+def test():
+    return "pepe is receiving memes! feels good man :')"
+
+@app.route("/ephemeralupload", methods=["POST"])
+@app.route("/ephemeralupload/", methods=["POST"])
+def ephemeralupload():
+    f = request.files["file"]
+    response = make_response(f.read())
+    response.headers["Content-Disposition"] = "attachment; filename=sent.png"
+    return response
 
 if __name__ == "__main__":
     app.debug = True
