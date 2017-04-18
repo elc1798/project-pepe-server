@@ -9,6 +9,7 @@ import glob
 app = Flask(__name__)
 
 app.config["UPLOAD_FOLDER"] = "static/uploads/"
+app.config["TEST_IMG_FOLDER"] = "static/test/"
 app.config["ALLOWED_EXTENSIONS"] = set(["png"])
 
 def allowed_file(fname):
@@ -37,17 +38,22 @@ def upload():
         return "ok"
     return "bad"
 
+@app.route("/status")
+@app.route("/status/")
+def status():
+    return "pepe is receiving memes! feels good man :')"
+
 @app.route("/test")
 @app.route("/test/")
 def test():
-    return "pepe is receiving memes! feels good man :')"
+    return ", ".join(glob.glob(os.path.join(app.config["TEST_IMG_FOLDER"], "*.png")))
 
 @app.route("/ephemeralupload", methods=["POST"])
 @app.route("/ephemeralupload/", methods=["POST"])
 def ephemeralupload():
     f = request.files["file"]
     response = make_response(f.read())
-    response.headers["Content-Disposition"] = "attachment; filename=sent.png"
+    response.headers["Content-Disposition"] = "attachment; filename=" + f.filename
     return response
 
 if __name__ == "__main__":
