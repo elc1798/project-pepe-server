@@ -12,6 +12,8 @@ app.config["UPLOAD_FOLDER"] = "static/uploads/"
 app.config["TEST_IMG_FOLDER"] = "static/test/"
 app.config["ALLOWED_EXTENSIONS"] = set(["png"])
 
+PNG = "*.png"
+
 def allowed_file(fname):
     has_extension = '.' in fname
     extension = fname.rsplit('.', 1)[1] if has_extension else ""
@@ -23,7 +25,7 @@ def get_img_urls():
     offset = int(request.args.get("offset", "0"))
     limit = int(request.args.get("limit", "10"))
 
-    images = list(sorted(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], "*.png"))))
+    images = list(sorted(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], PNG))))
 
     return ", ".join(images[offset : offset + limit])
 
@@ -43,10 +45,20 @@ def upload():
 def status():
     return "pepe is receiving memes! feels good man :')"
 
+@app.route("/gallerycount")
+@app.route("/gallerycount/")
+def gallery_count():
+    galleryID = request.args.get("gallery_id", None)
+
+    if galleryID == None:
+        return -1
+
+    return len(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], galleryID, PNG)))
+
 @app.route("/test")
 @app.route("/test/")
 def test():
-    return ", ".join(glob.glob(os.path.join(app.config["TEST_IMG_FOLDER"], "*.png")))
+    return ", ".join(glob.glob(os.path.join(app.config["TEST_IMG_FOLDER"], PNG)))
 
 @app.route("/ephemeralupload", methods=["POST"])
 @app.route("/ephemeralupload/", methods=["POST"])
