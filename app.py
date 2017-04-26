@@ -51,9 +51,11 @@ def gallery_count():
     galleryID = request.args.get("gallery_id", None)
 
     if galleryID == None:
-        return -1
+        return "-1"
 
-    return len(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], galleryID, PNG)))
+    return str(len(
+        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], galleryID, PNG))
+    ))
 
 @app.route("/test")
 @app.route("/test/")
