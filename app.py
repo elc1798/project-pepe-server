@@ -13,12 +13,30 @@ app.config["TEST_IMG_FOLDER"] = "static/test/"
 app.config["ALLOWED_EXTENSIONS"] = set(["png"])
 
 PNG = "*.png"
+PEPE_STATUS_MESSAGE = "pepe is receiving memes! feels good man :')"
+IMG_URL_SEPARATOR = ", "
 
 def allowed_file(fname):
     has_extension = '.' in fname
     extension = fname.rsplit('.', 1)[1] if has_extension else ""
     print "EXTENSION FOR", fname, extension
     return has_extension and extension in app.config["ALLOWED_EXTENSIONS"]
+
+def create_gallery_for(fname):
+    gallery_id = fname[:-4]
+    gallery_path = os.path.join(app.config["UPLOAD_FOLDER"], gallery_id)
+
+    if not os.path.exists(gallery_path):
+        try:
+            os.makedirs(gallery_path)
+        except:
+            return False
+    return True
+
+def get_gallery_size(gallery_id):
+    return len(
+        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], gallery_id, PNG))
+    )
 
 @app.route("/")
 def get_img_urls():
@@ -27,29 +45,19 @@ def get_img_urls():
 
     images = list(sorted(glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], PNG))))
 
-    return ", ".join(images[offset : offset + limit])
+    return IMG_URL_SEPARATOR.join(images[offset : offset + limit])
 
 @app.route("/upload", methods=["POST"])
 @app.route("/upload/", methods=["POST"])
 def upload():
     f = request.files["file"]
-    galleryID = request.args.get("gallery_id", None)
+    gallery_id = request.args.get("gallery_id", None)
 
     if f and allowed_file(f.filename):
         fname = secure_filename(f.filename)
 
-        if galleryID == None:
-            gallery_path = os.path.join(
-                app.config["UPLOAD_FOLDER"],
-                fname[:-4]
-            )
-
-            if not os.path.exists(gallery_path):
-                try:
-                    os.makedirs(gallery_path)
-                except:
-                    print "Oh no, what ever shall i do?? D:"
-                    return "bad"
+        if gallery_id == None:
+            create_gallery_for(fname)
 
             fullpath = os.path.join(
                 app.config["UPLOAD_FOLDER"],
@@ -58,10 +66,12 @@ def upload():
         else:
             fullpath = os.path.join(
                 app.config["UPLOAD_FOLDER"],
-                galleryID,
-                fname
+                gallery_id,
+                get_gallery_size(gallery_id) + PNG
             )
 
+
+        print "SAVING TO FULLPATH", fullpath
         f.save(fullpath)
         return "ok"
     return "bad"
@@ -69,24 +79,22 @@ def upload():
 @app.route("/status")
 @app.route("/status/")
 def status():
-    return "pepe is receiving memes! feels good man :')"
+    return PEPE_STATUS_MESSAGE
 
 @app.route("/gallerycount")
 @app.route("/gallerycount/")
 def gallery_count():
-    galleryID = request.args.get("gallery_id", None)
+    gallery_id = request.args.get("gallery_id", None)
 
-    if galleryID == None:
+    if gallery_id == None:
         return "-1"
 
-    return str(len(
-        glob.glob(os.path.join(app.config["UPLOAD_FOLDER"], galleryID, PNG))
-    ))
+    return str(get_gallery_size(gallery_id))
 
 @app.route("/test")
 @app.route("/test/")
 def test():
-    return ", ".join(glob.glob(os.path.join(app.config["TEST_IMG_FOLDER"], PNG)))
+    return IMG_URL_SEPARATOR.join(glob.glob(os.path.join(app.config["TEST_IMG_FOLDER"], PNG)))
 
 @app.route("/ephemeralupload", methods=["POST"])
 @app.route("/ephemeralupload/", methods=["POST"])
