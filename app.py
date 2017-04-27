@@ -67,7 +67,7 @@ def upload():
             fullpath = os.path.join(
                 app.config["UPLOAD_FOLDER"],
                 gallery_id,
-                str(get_gallery_size(gallery_id)) + PNG[:-4]
+                str(get_gallery_size(gallery_id)) + PNG[1:]
             )
 
 
