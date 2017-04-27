@@ -33,10 +33,36 @@ def get_img_urls():
 @app.route("/upload/", methods=["POST"])
 def upload():
     f = request.files["file"]
+    galleryID = request.args.get("gallery_id", None)
 
     if f and allowed_file(f.filename):
         fname = secure_filename(f.filename)
-        f.save(os.path.join(app.config["UPLOAD_FOLDER"], fname))
+
+        if galleryID == None:
+            gallery_path = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                fname[:-4]
+            )
+
+            if not os.path.exists(gallery_path):
+                try:
+                    os.makedirs(gallery_path)
+                except:
+                    print "Oh no, what ever shall i do?? D:"
+                    return "bad"
+
+            fullpath = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                fname
+            )
+        else:
+            fullpath = os.path.join(
+                app.config["UPLOAD_FOLDER"],
+                galleryID,
+                fname
+            )
+
+        f.save(fullpath)
         return "ok"
     return "bad"
 
