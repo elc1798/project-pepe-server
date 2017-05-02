@@ -71,6 +71,8 @@ else:
 print(A.dtype, y.dtype)
 print(A.shape)
 
+memes_classifier = None
+
 # A should be (n, 4k, 4r)
 MATRIX_SHAPE = A.shape
 
@@ -162,7 +164,7 @@ def meme_model(features, labels, mode):
     )
 
 def train(_):
-    global A, y
+    global A, y, memes_classifier
 
     # Load training and eval data
     train_data = A
@@ -171,7 +173,8 @@ def train(_):
     eval_labels = y[:25].copy()
 
     # Create the Estimator
-    memes_classifier = learn.Estimator(model_fn=meme_model,
+    if memes_classifier == None:
+        memes_classifier = learn.Estimator(model_fn=meme_model,
             model_dir='models/')
 
     # Set up logging for predictions
@@ -202,6 +205,20 @@ def train(_):
 
     print(eval_results)
 
+def get_rating(parsed_img):
+    global memes_classifier
+
+    if memes_classifier == None:
+        memes_classifier = learn.Estimator(model_fn=meme_model,
+            model_dir='models/')
+
+    res = memes_classifier.predict(x=parsed_img)
+    print(res)
+    for i in res:
+        print(i)
+
 if __name__ == "__main__":
-    tf.app.run(main=train)
+    # tf.app.run(main=train)
+    get_rating(A[100])
+    print(y[100])
 

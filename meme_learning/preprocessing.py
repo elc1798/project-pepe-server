@@ -67,21 +67,23 @@ def scale_images(src_path, dst_path):
     # Save the resized image to destination
     resized.save(dst_path, format=JPEG_FORMAT)
 
-def process_for_training():
-    images = glob.glob(os.path.join(DATA_DIR, WILD_PNG))
-    images += glob.glob(os.path.join(DATA_DIR, WILD_JPG))
-
+def process_for_training(images):
+    processed_paths = []
     for image in images:
         basename = image[ len(DATA_DIR) : -4 ]
         print "Resizing %s and converting to JPEG..." % (basename,)
-        scale_images(image, os.path.join(TRAIN_DIR, basename + ".jpg"))
+        processed_path = os.path.join(TRAIN_DIR, basename + ".jpg")
+        scale_images(image, processed_path)
+        processed_paths.append(processed_path)
+    return processed_path
 
 def get_training_set():
     global objects_detected
 
-    process_for_training()
+    raw = glob.glob(os.path.join(DATA_DIR, WILD_PNG))
+    raw += glob.glob(os.path.join(DATA_DIR, WILD_JPG))
+    images = process_for_training(raw)
 
-    images = glob.glob(os.path.join(TRAIN_DIR, WILD_JPG))
     dataunits = []
     for image in images:
         print "Image: %s (%d of %d)" % (image, len(dataunits) + 1, len(images))
@@ -111,6 +113,11 @@ def get_training_set():
         dataunit.rating
         for dataunit in dataunits
     ], dtype=np.int32)
+
+def get_single_img(img_path):
+    processed = process_for_training([img_path])
+    dataunit = DataUnit(processed[0])
+    return dataunit.mat
 
 if __name__ == "__main__":
     process_for_training()
