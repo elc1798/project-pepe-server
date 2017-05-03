@@ -7,9 +7,13 @@ directory, this project acts as a file server, and an API endpoint for the
 Pepe](https://github.com/elc1798/project-pepe). All of that is done in Flask,
 and is fairly simple.
 
+(The `meme_learning` directory isn't on heroku, since the model itself is 4.2 GB
+and has to be loaded into live memory. I doubt the Heroku free plan will let me
+do that...)
+
 # The Meme Learning Directory
 
-This was an extension on a the Life is a Meme Android app that I wrote for CS
+This was an extension on the Life is a Meme Android app that I wrote for CS
 126 at UIUC. I figured that it would be fun to try to learn some TensorFlow and
 Deep Learning, so I tried to write a network to rate the dankness of memes (must
 be in image form, sorry, no video memes!)
