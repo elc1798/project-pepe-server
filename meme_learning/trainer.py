@@ -56,17 +56,22 @@ Meme classification model:
         7. Logit Layer with 10 units (each denoting a rating between 1 - 10)
 """
 
-A, y = None, None
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+MODEL_DIR = "models/"
 
-npyfs = glob.glob("*.npy")
-if "mat_A.npy" in npyfs and "mat_y.npy" in npyfs:
+A, y = None, None
+npyfs = glob.glob(os.path.join(CURRENT_DIR, "*.npy"))
+mat_A_npy = os.path.join(CURRENT_DIR, "mat_A.npy")
+mat_y_npy = os.path.join(CURRENT_DIR, "mat_y.npy")
+
+if os.path.exists(mat_A_npy) and os.path.exists(mat_y_npy):
     print("USING PRELOADED TRAINING SET")
-    A = np.load("mat_A.npy")
-    y = np.load("mat_y.npy")
+    A = np.load(mat_A_npy)
+    y = np.load(mat_y_npy)
 else:
     A, y = preprocessing.get_training_set()
-    np.save("mat_A.npy", A)
-    np.save("mat_y.npy", y)
+    np.save(mat_A_npy, A)
+    np.save(mat_y_npy, y)
 
 print(A.dtype, y.dtype)
 print(A.shape)
@@ -175,7 +180,7 @@ def train(_):
     # Create the Estimator
     if memes_classifier == None:
         memes_classifier = learn.Estimator(model_fn=meme_model,
-            model_dir='models/')
+            model_dir=MODEL_DIR)
 
     # Set up logging for predictions
     # Log the values in the "Softmax" tensor with label "probabilities"
@@ -210,7 +215,7 @@ def get_rating(parsed_img):
 
     if memes_classifier == None:
         memes_classifier = learn.Estimator(model_fn=meme_model,
-            model_dir='models/')
+            model_dir=MODEL_DIR)
 
     res = memes_classifier.predict(x=parsed_img)
     print(res)
