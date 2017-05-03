@@ -18,6 +18,18 @@ TRAIN_DIR = "train/"
 
 objects_detected = {}
 
+CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
+
+A, y = None, None
+npyfs = glob.glob(os.path.join(CURRENT_DIR, "*.npy"))
+mat_A_npy = os.path.join(CURRENT_DIR, "mat_A.npy")
+mat_y_npy = os.path.join(CURRENT_DIR, "mat_y.npy")
+
+if os.path.exists(mat_A_npy) and os.path.exists(mat_y_npy):
+    print("USING PRELOADED TRAINING SET")
+    A = np.load(mat_A_npy)
+    y = np.load(mat_y_npy)
+
 class DataUnit:
     def __init__(self, image_path):
         global objects_detected
@@ -117,12 +129,29 @@ def get_training_set():
 def get_single_img(img_path):
     processed = process_for_training([img_path])
     dataunit = DataUnit(processed[0])
-    return dataunit.mat
+    one_hot_size = ((len(objects_detected) // 300) + 2) * 300
+    dataunit.obj_vec = np.zeros( (one_hot_size,), dtype=np.float32 )
+    for obj_id in dataunit.objects:
+        if obj_id in objects_detected:
+            dataunit.obj_vec[objects_detected[obj_id]] = dataunit.objects[obj_id]
+        else:
+            print "Unrecognized Object! Discarding..."
+
+    mod4 = (dataunit.mat.shape[0] + (one_hot_size // 300)) % 4
+    padding = np.zeros((4 - mod4, 300))
+
+    return np.r_[
+        dataunit.mat,
+        padding,
+        np.reshape(dataunit.obj_vec, (one_hot_size // 300, 300))
+    ]
 
 if __name__ == "__main__":
-    process_for_training()
+    if A == None or y == None:
+        A, y = get_training_set()
+        np.save(mat_A_npy, A)
+        np.save(mat_y_npy, y)
 
-    A, y = get_training_set()
     print "Final shape of A: %r" % (A.shape,)
     print "Final shape of y: %r" % (y.shape,)
 
