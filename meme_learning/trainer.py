@@ -223,7 +223,11 @@ def get_rating(parsed_img):
         print(i)
 
 if __name__ == "__main__":
-    # tf.app.run(main=train)
-    get_rating(A[100])
-    print(y[100])
+    choice = int(raw_input("Enter 1 to train, 2 to test: "))
+
+    if choice == 1:
+        tf.app.run(main=train)
+    elif choice == 2:
+        get_rating(A[100])
+        print(y[100])
 
