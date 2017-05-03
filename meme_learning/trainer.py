@@ -214,6 +214,7 @@ def get_rating(parsed_img):
     global memes_classifier
 
     if memes_classifier == None:
+        print("Restoring estimator...")
         memes_classifier = learn.Estimator(model_fn=meme_model,
             model_dir=MODEL_DIR)
 
@@ -228,6 +229,12 @@ if __name__ == "__main__":
     if choice == 1:
         tf.app.run(main=train)
     elif choice == 2:
-        get_rating(A[100])
-        print(y[100])
+
+        tests = glob.glob("test/*.jpg") + glob.glob("test/*.png")
+
+        for test in tests:
+            print(test)
+            B = preprocessing.get_single_img(test)
+            get_rating(B)
+
 

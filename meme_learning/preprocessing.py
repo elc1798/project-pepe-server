@@ -36,8 +36,11 @@ class DataUnit:
 
         tmp = image_path[ len(TRAIN_DIR) : -4 ].split("_")
 
-        self.rating = int(tmp[1])
-        self.ID = "_".join(tmp[2:])
+        try:
+            self.rating = int(tmp[1])
+            self.ID = "_".join(tmp[2:])
+        except:
+            print("No rating in filename!")
 
         self.mat = spimg.imread(image_path)
 
@@ -87,7 +90,7 @@ def process_for_training(images):
         processed_path = os.path.join(TRAIN_DIR, basename + ".jpg")
         scale_images(image, processed_path)
         processed_paths.append(processed_path)
-    return processed_path
+    return processed_paths
 
 def get_training_set():
     global objects_detected
@@ -144,7 +147,7 @@ def get_single_img(img_path):
         dataunit.mat,
         padding,
         np.reshape(dataunit.obj_vec, (one_hot_size // 300, 300))
-    ]
+    ].astype(np.float32)
 
 if __name__ == "__main__":
     if A == None or y == None:
