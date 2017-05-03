@@ -1,6 +1,6 @@
 # Project Pepe Server
 
-Most of the server is hosted on [Heroku](project-pepe-imgs.herokuapp.com), with
+Most of the server is hosted on [Heroku](https://project-pepe-imgs.herokuapp.com), with
 the exception of the `meme_learning` directory. With the exception of that
 directory, this project acts as a file server, and an API endpoint for the
 **Life is a Meme** app (otherwise known as [Project
