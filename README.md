@@ -68,5 +68,5 @@ the top of the `trainer.py` file.
 
 ## TensorBoard Render
 
-![Render](https://scontent.xx.fbcdn.net/v/t35.0-12/18236482_1849192035341667_852232647_o.png?oh=6d209b7bffd4759e9e97e5f43f6408cf&oe=590B97EB)
+![Render](tensor_board_render.png`)
 
